@@ -3,7 +3,8 @@
   become: yes
   vars:
     sites:
-      - example.com.conf
+      example.com.conf
+      test.com.conf
 
   tasks:
   - name: Update Cache
@@ -34,12 +35,9 @@
     copy: src=test.com.conf  dest=/etc/apache2/sites-available/
 
   - name: Activate Vhosts
-    command: a2ensite {{ item }}
+    command: a2ensite {{ sites }}
     args:
-      creates: "/etc/apache2/sites-available/{{ item }}"
-    with_items:
-      - example.com.conf
-      - test.com.conf
+      creates: "/etc/apache2/sites-available/({ sites })"
     notify:
       - restart apache2
 

@@ -1,6 +1,10 @@
 ---
 - hosts: ubu
   become: yes
+  vars:
+    sites:
+      - example.com.conf
+
   tasks:
   - name: Update Cache
     apt: update_cache=yes cache_valid_time=3600
@@ -30,12 +34,12 @@
     copy: src=test.com.conf  dest=/etc/apache2/sites-available/
 
   - name: Activate Vhosts
-    command: a2ensite example.com.conf
-    notify:
-      - restart apache2
-      
-  - name: Activate Vhosts
-    command: a2ensite test.com.conf
+    command: a2ensite {{ item }}
+    args:
+      creates: "/etc/apache2/sites-available/{{ item }}"
+    with_items:
+      - example.com.conf
+      - test.com.conf
     notify:
       - restart apache2
 

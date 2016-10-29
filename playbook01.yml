@@ -1,0 +1,10 @@
+---
+- hosts: ubu
+  become: yes
+  tasks:
+  - name: Update Cache
+    apt: update_cache=yes
+
+  - name: Install Apache2
+    apt: apache2
+    state: present

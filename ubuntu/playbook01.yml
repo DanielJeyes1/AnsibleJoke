@@ -1,0 +1,41 @@
+---
+- hosts: ubu
+  become: yes
+  tasks:
+  - name: Update Cache
+    apt: update_cache=yes cache_valid_time=3600
+
+  - name: Install Apache
+    apt:
+      name: apache2
+      state: present
+
+  - name: Create Directory For Sites
+    file: path=/var/www/example.com/public_html state=directory  owner=www-data group=www-data mode=0755
+
+  - name: Create Directory For Sites
+    file: path=/var/www/test.com/public_html state=directory  owner=www-data group=www-data mode=0755
+
+
+  - name: Move Example Index File From Local Machine
+    copy: src=index.html dest=/var/www/example.com/public_html
+
+  - name: Move Test Index File From Local Machine
+    copy: src=index1.html dest=/var/www/test.com/public_html/index.html
+
+  - name: Move Example Conf File From Local Machine
+    copy: src=example.com.conf dest=/etc/apache2/sites-available/
+
+  - name: Move Test Conf From Local Machine
+    copy: src=test.com.conf  dest=/etc/apache2/sites-available/
+
+  - name: Activate Vhosts
+    command: a2ensite example.com.conf
+
+  - name: Activate Vhosts
+    command: a2ensite test.com.conf
+
+  - name: Restart Apache
+    service:
+      name: apache2
+      state: restarted

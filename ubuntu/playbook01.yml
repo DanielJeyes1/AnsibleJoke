@@ -31,11 +31,14 @@
 
   - name: Activate Vhosts
     command: a2ensite example.com.conf
-
+    notify:
+      - restart apache2
+      
   - name: Activate Vhosts
     command: a2ensite test.com.conf
+    notify:
+      - restart apache2
 
-  - name: Restart Apache
-    service:
-      name: apache2
-      state: restarted
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted

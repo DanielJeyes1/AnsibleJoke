@@ -2,9 +2,10 @@
 - hosts: ubu
   become: yes
   vars:
-    sites:
-      example.com.conf
-      test.com.conf
+    site1:
+      example.com
+    site2:
+      test.com
 
   tasks:
   - name: Update Cache
@@ -34,13 +35,17 @@
   - name: Move Test Conf From Local Machine
     copy: src=test.com.conf  dest=/etc/apache2/sites-available/
 
-  - name: Activate Vhosts
-    command: a2ensite {{ sites }}
+  - name: Activate {{ item }}
+    command: a2ensite {{ item }}.conf
     args:
-      creates: "/etc/apache2/sites-available/({ sites })"
+      creates: /etc/apache2/sites-enabled/{{ item }}.conf
+    with_items:
+      - example.com
+      - test.com
     notify:
       - restart apache2
 
+      
   handlers:
     - name: restart apache2
       service: name=apache2 state=restarted
